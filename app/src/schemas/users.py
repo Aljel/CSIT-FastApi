@@ -1,10 +1,10 @@
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
-from datetime import date, datetime
+from datetime import datetime
 from typing import Optional
 
 
 class UserBase(BaseModel):
-    login: str
+    username: str
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[EmailStr] = None
@@ -12,6 +12,9 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str = Field(min_length=8)
+    is_staff: bool = False
+    is_active: bool = True
+    is_superuser: bool = False
 
 
 class UserResponse(UserBase):
@@ -20,5 +23,5 @@ class UserResponse(UserBase):
     is_active: bool
     is_superuser: bool
     last_login: Optional[datetime]
-    date_joined: date
+    date_joined: datetime
     model_config = ConfigDict(from_attributes=True)

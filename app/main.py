@@ -1,9 +1,16 @@
+from src.infrastructure.sqlite.database import database, Base
 import asyncio
 import uvicorn
 
 from src.app import create_app
 
 app = create_app()
+
+
+@app.on_event("startup")
+def startup():
+    from src.infrastructure.sqlite.models import users, posts, comments, categories
+    Base.metadata.create_all(bind=database._engine)  # используем _engine
 
 
 async def run() -> None:

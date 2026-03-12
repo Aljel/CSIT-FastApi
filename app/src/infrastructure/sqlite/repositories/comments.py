@@ -7,7 +7,7 @@ class CommentRepository:
     def __init__(self):
         self._model: Type[Comment] = Comment
 
-    def get_by_post(self, session: Session, post_id: int) -> List[Comment]:
+    def get_by_post_id(self, session: Session, post_id: int) -> List[Comment]:
         query = (
             session.query(self._model)
             .where(self._model.post_id == post_id)

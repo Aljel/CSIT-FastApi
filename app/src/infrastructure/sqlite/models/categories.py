@@ -1,7 +1,7 @@
 from datetime import datetime
 from src.infrastructure.sqlite.database import Base
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from .posts import PostModel
+# from .posts import PostModel
 
 
 class CategoryModel(Base):

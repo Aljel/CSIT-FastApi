@@ -16,3 +16,8 @@ class UserRepository:
 
     def get_by_id(self, session: Session, user_id: int) -> Optional[UserModel]:
         return session.query(self._model).where(self._model.id == user_id).scalar()
+
+    def create(self, session: Session, user: UserModel) -> UserModel:
+        session.add(user)
+        session.flush()
+        return user

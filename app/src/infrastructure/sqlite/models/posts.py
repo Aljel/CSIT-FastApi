@@ -3,7 +3,7 @@ from src.infrastructure.sqlite.database import Base
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .comments import CommentModel
-from .users import UserModel
+# from .users import UserModel
 from .categories import CategoryModel
 
 
