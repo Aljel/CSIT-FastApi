@@ -8,7 +8,6 @@ class CommentBase(BaseModel):
 
 
 class CommentCreate(CommentBase):
-    # Как и с постом, author_id лучше брать из сессии/токена
     author_id: int
 
 

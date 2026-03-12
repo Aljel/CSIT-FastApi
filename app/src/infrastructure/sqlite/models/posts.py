@@ -1,13 +1,13 @@
 from datetime import datetime
-from infrastructure.sqlite.database import Base
+from src.infrastructure.sqlite.database import Base
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from .comments import Comment
-from .users import User
-from .categories import Category
+from .comments import CommentModel
+from .users import UserModel
+from .categories import CategoryModel
 
 
-class Post(Base):
+class PostModel(Base):
     __tablename__ = "blog_post"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -23,6 +23,6 @@ class Post(Base):
         ForeignKey("blog_category.id"))
     location_id: Mapped[int] = mapped_column(nullable=True)
 
-    author: Mapped["User"] = relationship(back_populates="posts")
-    category: Mapped["Category"] = relationship(back_populates="posts")
-    comments: Mapped["Comment"] = relationship(back_populates="post")
+    author: Mapped["UserModel"] = relationship(back_populates="posts")
+    category: Mapped["CategoryModel"] = relationship(back_populates="posts")
+    comments: Mapped["CommentModel"] = relationship(back_populates="post")

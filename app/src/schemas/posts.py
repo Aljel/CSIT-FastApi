@@ -14,7 +14,6 @@ class PostBase(BaseModel):
 
 
 class PostCreate(PostBase):
-    # author_id обычно берется из токена авторизации, но пока оставим тут
     author_id: int
 
 

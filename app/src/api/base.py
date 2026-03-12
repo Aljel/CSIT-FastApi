@@ -1,19 +1,25 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Depends
 
-from src.schemas.posts import Post
+from src.schemas.posts import PostCreate, PostResponse
+from src.schemas.users import UserResponse
+from src.domain.user.use_cases.get_user_by_login import GetUserByLoginUseCase
+from api.depends import get_get_user_by_login_use_case
 
 router = APIRouter()
 
 
-@router.get("/hello_world", status_code=status.HTTP_200_OK)
-async def get_hello_world() -> dict:
-    response = {"text": "Hello, World!"}
+@router.get("/user/{login}", status_code=status.HTTP_200_OK, response_model=UserResponse)
+async def get_user_by_login(
+    login: str,
+    use_case: GetUserByLoginUseCase = Depends(get_get_user_by_login_use_case)
+) -> UserResponse:
+    user = await use_case.execute(login=login)
 
-    return response
+    return user
 
 
-@router.post("/test_json", status_code=status.HTTP_201_CREATED, response_model=Post)
-async def test_json(post: Post) -> dict:
+@router.post("/test_json", status_code=status.HTTP_201_CREATED, response_model=PostResponse)
+async def test_json(post: PostCreate) -> dict:
     if len(post.text) < 3:
         raise HTTPException(
             detail="Длина поста должна быть не меньше 3 символов",
@@ -22,7 +28,7 @@ async def test_json(post: Post) -> dict:
 
     response = {
         "post_text": post.text,
-        "post_title": post.title,
+        "author_name": post.author.login
     }
 
-    return Post.model_validate(obj=response)
+    return PostResponse.model_validate(obj=response)

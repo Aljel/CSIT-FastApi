@@ -1,10 +1,10 @@
 from datetime import datetime
-from infrastructure.sqlite.database import Base
+from src.infrastructure.sqlite.database import Base
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from .posts import Post
+from .posts import PostModel
 
 
-class Category(Base):
+class CategoryModel(Base):
     __tablename__ = "blog_category"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -14,4 +14,4 @@ class Category(Base):
     is_published: Mapped[bool] = mapped_column(default=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
-    posts: Mapped["Post"] = relationship(back_populates="category")
+    posts: Mapped["PostModel"] = relationship(back_populates="category")

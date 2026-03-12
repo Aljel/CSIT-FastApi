@@ -1,6 +1,6 @@
 from typing import Type, List
 from sqlalchemy.orm import Session
-from src.models import Comment
+from src.infrastructure.sqlite.models import Comment
 
 
 class CommentRepository:

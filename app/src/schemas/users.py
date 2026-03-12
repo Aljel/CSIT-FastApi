@@ -4,14 +4,14 @@ from typing import Optional
 
 
 class UserBase(BaseModel):
-    username: str
+    login: str
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[EmailStr] = None
 
 
 class UserCreate(UserBase):
-    password: str = Field(min_length=8)  # Для создания нужен пароль
+    password: str = Field(min_length=8)
 
 
 class UserResponse(UserBase):
