@@ -1,17 +1,24 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Optional
 
 
-class Post(BaseModel):
+class PostBase(BaseModel):
     title: str = Field(max_length=256, description='Заголовок')
     text: str = Field(description='Текст')
-    pub_date: datetime = Field(
-        description='Дата и время публикации. Если установить дату и время в будущем - можно делать отложенные публикации')
-    author_id: int = Field(description='Автор публикации')
-    location_id: int = Field(default=None, description='Местоположение')
-    category_id: int = Field(default=None, description='Категория')
-    is_published: bool = Field(default=True, description='Опубликовано')
-    created_at: datetime = Field(
-        default=datetime.now(), description='Добавлено')
-    image_url: str = Field(
-        default=None, description='URL прикрепленного изображения')
+    pub_date: datetime
+    location_id: Optional[int] = None
+    category_id: Optional[int] = None
+    is_published: bool = Field(default=True)
+    image_url: Optional[str] = None
+
+
+class PostCreate(PostBase):
+    # author_id обычно берется из токена авторизации, но пока оставим тут
+    author_id: int
+
+
+class PostResponse(PostBase):
+    id: int
+    author_id: int
+    created_at: datetime

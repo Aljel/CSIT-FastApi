@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, HTTPException
 
-from schemas.posts import Post
+from src.schemas.posts import Post
 
 router = APIRouter()
 
@@ -22,7 +22,7 @@ async def test_json(post: Post) -> dict:
 
     response = {
         "post_text": post.text,
-        "author_name": post.author.login
+        "post_title": post.title,
     }
 
     return Post.model_validate(obj=response)
