@@ -29,8 +29,8 @@ class CreateUserUseCase:
                 is_staff=data.is_staff,
                 is_active=data.is_active,
                 is_superuser=data.is_superuser,
-                last_login=datetime.now(),
-                date_joined=datetime.now()
+                last_login=datetime.now,
+                date_joined=datetime.now
             )
 
             created = self._repo.create(session, user)

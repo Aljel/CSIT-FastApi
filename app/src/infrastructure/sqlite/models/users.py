@@ -3,7 +3,6 @@ from src.infrastructure.sqlite.database import Base
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .posts import PostModel
 from .comments import CommentModel
-from typing import Optional
 
 
 class UserModel(Base):

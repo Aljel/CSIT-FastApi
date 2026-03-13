@@ -15,6 +15,7 @@ class UserCreate(UserBase):
     is_staff: bool = False
     is_active: bool = True
     is_superuser: bool = False
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserResponse(UserBase):
