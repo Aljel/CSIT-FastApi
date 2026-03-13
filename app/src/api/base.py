@@ -1,6 +1,4 @@
-from fastapi import APIRouter, status, HTTPException, Depends
-
-from src.schemas.posts import PostCreate, PostResponse
+from fastapi import APIRouter, status, Depends
 from src.schemas.users import UserResponse, UserCreate, UserBase
 from src.domain.user.use_cases.get_user_by_username import GetUserByUsernameUseCase
 from src.domain.user.use_cases.create_user import CreateUserUseCase
@@ -26,19 +24,3 @@ async def create_user(
     use_case: CreateUserUseCase = Depends(create_user_use_case)
 ) -> UserBase:
     return await use_case.execute(data)
-
-
-@router.post("/test_json", status_code=status.HTTP_201_CREATED, response_model=PostResponse)
-async def test_json(post: PostCreate) -> dict:
-    if len(post.text) < 3:
-        raise HTTPException(
-            detail="Длина поста должна быть не меньше 3 символов",
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-        )
-
-    response = {
-        "post_text": post.text,
-        "author_name": post.author.username
-    }
-
-    return PostResponse.model_validate(obj=response)
