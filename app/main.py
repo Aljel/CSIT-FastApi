@@ -9,7 +9,7 @@ app = create_app()
 
 @app.on_event("startup")
 def startup():
-    from src.infrastructure.sqlite.models import users, posts, comments, categories
+    from src.infrastructure.sqlite.models import users_model, posts_model, comments_model, categories_model
     Base.metadata.create_all(bind=database._engine)  # используем _engine
 
 

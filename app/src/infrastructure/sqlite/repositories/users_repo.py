@@ -1,6 +1,6 @@
 from typing import Type, Optional
 from sqlalchemy.orm import Session
-from src.infrastructure.sqlite.models.users import UserModel
+from src.infrastructure.sqlite.models.users_model import UserModel
 
 
 class UserRepository:
@@ -20,4 +20,5 @@ class UserRepository:
     def create(self, session: Session, user: UserModel) -> UserModel:
         session.add(user)
         session.flush()
+        session.commit()
         return user

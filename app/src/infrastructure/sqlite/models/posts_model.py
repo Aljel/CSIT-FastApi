@@ -2,9 +2,9 @@ from datetime import datetime
 from src.infrastructure.sqlite.database import Base
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from .comments import CommentModel
+from .comments_model import CommentModel
 # from .users import UserModel
-from .categories import CategoryModel
+from .categories_model import CategoryModel
 
 
 class PostModel(Base):

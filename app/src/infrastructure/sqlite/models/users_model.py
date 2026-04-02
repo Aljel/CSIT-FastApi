@@ -1,8 +1,8 @@
 from datetime import datetime
 from src.infrastructure.sqlite.database import Base
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from .posts import PostModel
-from .comments import CommentModel
+from .posts_model import PostModel
+from .comments_model import CommentModel
 
 
 class UserModel(Base):

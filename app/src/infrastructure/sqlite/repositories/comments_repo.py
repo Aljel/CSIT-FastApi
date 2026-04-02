@@ -17,5 +17,5 @@ class CommentRepository:
 
     def create(self, session: Session, comment_obj: Comment) -> Comment:
         session.add(comment_obj)
-
+        session.commit()
         return comment_obj

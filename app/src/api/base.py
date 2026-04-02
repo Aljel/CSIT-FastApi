@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Depends
-from src.schemas.users import UserResponse, UserCreate, UserBase
+from src.schemas.users_schem import UserResponse, UserCreate, UserBase
 from src.domain.user.use_cases.get_user_by_username import GetUserByUsernameUseCase
 from src.domain.user.use_cases.create_user import CreateUserUseCase
 from src.api.depends import get_user_by_username_use_case, create_user_use_case

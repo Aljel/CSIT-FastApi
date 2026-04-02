@@ -1,6 +1,6 @@
 from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.users import UserRepository
-from src.schemas.users import UserResponse
+from src.infrastructure.sqlite.repositories.users_repo import UserRepository
+from src.schemas.users_schem import UserResponse
 from fastapi import HTTPException, status
 
 
