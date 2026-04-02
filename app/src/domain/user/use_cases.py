@@ -1,17 +1,17 @@
 from fastapi import HTTPException, status
+from datetime import datetime
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.users_repo import UserRepository
 from src.infrastructure.sqlite.models.users_model import UserModel
 from src.schemas.users_schem import UserCreate, UserResponse
-from datetime import datetime
 
 
-class CreateUserUseCase:
+class UserUseCases:
     def __init__(self):
         self._database = database
         self._repo = UserRepository()
 
-    async def execute(self, data: UserCreate) -> UserResponse:
+    async def create(self, data: UserCreate) -> UserResponse:
         with self._database.session() as session:
             existing = self._repo.get_by_username(session, data.username)
             if existing:
@@ -21,18 +21,25 @@ class CreateUserUseCase:
                 )
 
             user = UserModel(
-                username=data.username,
-                first_name=data.first_name,
-                last_name=data.last_name,
-                email=data.email,
+                **data.model_dump(exclude={"password"}),
                 password=data.password,
-                is_staff=data.is_staff,
-                is_active=data.is_active,
-                is_superuser=data.is_superuser,
                 last_login=datetime.now(),
                 date_joined=datetime.now()
             )
 
             created = self._repo.create(session, user)
-            # ВАЖНО: Валидируем через UserResponse, чтобы подтянулись id и даты
             return UserResponse.model_validate(created, from_attributes=True)
+
+    async def get_by_username(self, username: str) -> UserResponse:
+        with self._database.session() as session:
+            user = self._repo.get_by_username(session, username)
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+            return UserResponse.model_validate(user, from_attributes=True)
+
+    async def delete(self, user_id: int) -> None:
+        with self._database.session() as session:
+            user = self._repo.get_by_id(session, user_id)
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+            self._repo.delete(session, user)

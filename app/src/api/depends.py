@@ -1,10 +1,20 @@
-from src.domain.user.use_cases.get_user_by_username import GetUserByUsernameUseCase
-from src.domain.user.use_cases.create_user import CreateUserUseCase
+from src.domain.user.use_cases import UserUseCases
+from src.domain.post.use_cases import PostUseCases
+from src.domain.comment.use_cases import CommentUseCases
+from src.domain.category.use_cases import CategoryUseCases
 
 
-def get_user_by_username_use_case() -> GetUserByUsernameUseCase:
-    return GetUserByUsernameUseCase()
+def user_use_cases() -> UserUseCases:
+    return UserUseCases()
 
 
-def create_user_use_case() -> CreateUserUseCase:
-    return CreateUserUseCase()
+def post_use_cases() -> PostUseCases:
+    return PostUseCases()
+
+
+def comment_use_cases() -> CommentUseCases:
+    return CommentUseCases()
+
+
+def category_use_cases() -> CategoryUseCases:
+    return CategoryUseCases()
