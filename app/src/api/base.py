@@ -1,45 +1,19 @@
 from fastapi import APIRouter, status, Depends
-from src.schemas.users_schem import UserResponse, UserCreate
-from src.api.depends import user_use_cases
-from src.domain.user.use_cases import UserUseCases
 from src.schemas.posts_schem import PostResponse, PostCreate
 from src.api.depends import post_use_cases
-from src.domain.post.use_cases import PostUseCases
+from src.domain.post.post_use_cases import PostUseCases
 from src.schemas.comments_schem import CommentResponse, CommentCreate
 from src.api.depends import comment_use_cases
-from src.domain.comment.use_cases import CommentUseCases
+from src.domain.comment.comment_use_cases import CommentUseCases
 from src.schemas.categoties_schem import CategoryResponse, CategoryCreate
 from src.api.depends import category_use_cases
-from src.domain.category.use_cases import CategoryUseCases
+from src.domain.category.category_use_cases import CategoryUseCases
 from typing import List
+from src.api.user import router as user_router
+
 
 router = APIRouter()
-
-
-@router.post("/users", status_code=status.HTTP_201_CREATED, response_model=UserResponse, tags=["Users"])
-async def create_user(
-    data: UserCreate,
-    service: UserUseCases = Depends(user_use_cases)
-):
-    return await service.create(data)
-
-
-@router.get("/users/{username}", response_model=UserResponse, tags=["Users"])
-async def get_user(
-    username: str,
-    service: UserUseCases = Depends(user_use_cases)
-):
-    return await service.get_by_username(username)
-
-
-@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Users"])
-async def delete_user(
-    user_id: int,
-    service: UserUseCases = Depends(user_use_cases)
-):
-    """Удалить пользователя"""
-    await service.delete(user_id)
-    return None
+router.include_router(user_router)
 
 
 @router.get("/posts", response_model=List[PostResponse], tags=["Posts"])

@@ -1,7 +1,7 @@
-from src.domain.user.use_cases import UserUseCases
-from src.domain.post.use_cases import PostUseCases
-from src.domain.comment.use_cases import CommentUseCases
-from src.domain.category.use_cases import CategoryUseCases
+from src.domain.user.user_use_cases import UserUseCases
+from src.domain.post.post_use_cases import PostUseCases
+from src.domain.comment.comment_use_cases import CommentUseCases
+from src.domain.category.category_use_cases import CategoryUseCases
 
 
 def user_use_cases() -> UserUseCases:
