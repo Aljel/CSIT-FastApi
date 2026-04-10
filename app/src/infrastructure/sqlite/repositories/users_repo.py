@@ -1,6 +1,6 @@
 from typing import Type
 from sqlalchemy.orm import session
-from sqlalchemy import select, insert
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from src.infrastructure.sqlite.models.users_model import UserModel
 from src.core.exceptions.database_exceptions import UserNotFoundException, UserAlreadyExistsException

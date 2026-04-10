@@ -19,6 +19,10 @@ class PostAlreadyExistsException(BaseDatabaseException):
     pass
 
 
+class PostRandomException(BaseDatabaseException):
+    pass
+
+
 class CommentNotFoundException(BaseDatabaseException):
     pass
 
