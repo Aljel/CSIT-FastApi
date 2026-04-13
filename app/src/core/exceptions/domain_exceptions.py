@@ -63,3 +63,12 @@ class CommentNotFoundByIdException(BaseDomainException):
             id=id)
 
         super().__init__(detail=self._exception_text_template)
+
+
+class CommentMemeException(BaseDomainException):
+    _exception_text_template = "skill issue"
+
+    def __init__(self) -> None:
+        self._exception_text_template = self._exception_text_template.format()
+
+        super().__init__(detail=self._exception_text_template)

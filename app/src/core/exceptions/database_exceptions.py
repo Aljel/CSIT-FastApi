@@ -27,6 +27,10 @@ class CommentNotFoundException(BaseDatabaseException):
     pass
 
 
+class CommentRandomException(BaseDatabaseException):
+    pass
+
+
 class CategoryNotFoundException(BaseDatabaseException):
     pass
 
