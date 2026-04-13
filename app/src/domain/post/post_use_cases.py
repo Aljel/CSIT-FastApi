@@ -1,4 +1,3 @@
-from fastapi import HTTPException, status
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.posts_repo import PostRepository
 from src.infrastructure.sqlite.models.posts_model import PostModel
@@ -21,7 +20,7 @@ class PostUseCases:
                 return PostResponse.model_validate(created, from_attributes=True)
         except PostAlreadyExistsException:
             raise PostNameIsNotUniqueException(
-                name=data.name)
+                name=data.title)
 
     async def get_all(self, limit: int = 10) -> List[PostResponse]:
         try:
@@ -35,6 +34,8 @@ class PostUseCases:
         try:
             with self._database.session() as session:
                 post = self._repo.get_by_id(session, post_id)
+                if post is None:
+                    raise PostNotFoundByIdException(id=post_id)
                 return PostResponse.model_validate(post, from_attributes=True)
         except PostNotFoundException:
             raise PostNotFoundByIdException(id=post_id)
@@ -43,6 +44,8 @@ class PostUseCases:
         try:
             with self._database.session() as session:
                 post = self._repo.get_by_id(session, post_id)
+                if post is None:
+                    raise PostNotFoundByIdException(id=post_id)
                 self._repo.delete(session, post)
         except PostNotFoundException:
             raise PostNotFoundByIdException(id=post_id)

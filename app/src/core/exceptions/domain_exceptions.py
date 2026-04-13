@@ -53,3 +53,13 @@ class PostMemeException(BaseDomainException):
         self._exception_text_template = self._exception_text_template.format()
 
         super().__init__(detail=self._exception_text_template)
+
+
+class CommentNotFoundByIdException(BaseDomainException):
+    _exception_text_template = "Комментарий с идентификатором '{id}' не найден"
+
+    def __init__(self, id: int) -> None:
+        self._exception_text_template = self._exception_text_template.format(
+            id=id)
+
+        super().__init__(detail=self._exception_text_template)

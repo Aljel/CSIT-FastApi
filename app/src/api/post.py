@@ -15,7 +15,7 @@ async def list_posts(
     service: PostUseCases = Depends(post_use_cases)
 ):
     try:
-        return await service.get_published(limit)
+        return await service.get_all(limit)
     except PostMemeException as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())
