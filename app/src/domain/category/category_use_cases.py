@@ -4,6 +4,8 @@ from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.categories_repo import CategoryRepository
 from src.infrastructure.sqlite.models.categories_model import CategoryModel
 from src.schemas.categoties_schem import CategoryCreate, CategoryResponse
+from src.core.exceptions.database_exceptions import CategoryNotFoundException, CategoryAlreadyExistsException, CategoryRandomException
+from src.core.exceptions.domain_exceptions import CategoryNotFoundByIdException, CategoryMemeException, CategoryNameIsNotUniqueException
 
 
 class CategoryUseCases:
@@ -12,21 +14,29 @@ class CategoryUseCases:
         self._repo = CategoryRepository()
 
     async def create(self, data: CategoryCreate) -> CategoryResponse:
-        with self._database.session() as session:
-            category = CategoryModel(**data.model_dump())
-            created = self._repo.create(session, category)
-            return CategoryResponse.model_validate(created, from_attributes=True)
+        category = CategoryModel(**data.model_dump())
+        try:
+            with self._database.session() as session:
+                created = self._repo.create(session, category)
+                return CategoryResponse.model_validate(created, from_attributes=True)
+        except CategoryAlreadyExistsException:
+            raise CategoryNameIsNotUniqueException(title=category.title)
 
     async def get_all(self) -> List[CategoryResponse]:
-        with self._database.session() as session:
-            categories = self._repo.get_all(session)
-            return [CategoryResponse.model_validate(c, from_attributes=True) for c in categories]
+        try:
+            with self._database.session() as session:
+                categories = self._repo.get_all(session)
+                return [CategoryResponse.model_validate(c, from_attributes=True) for c in categories]
+        except CategoryRandomException:
+            raise CategoryMemeException()
 
     async def delete(self, category_id: int) -> None:
-        with self._database.session() as session:
-            category = session.query(CategoryModel).filter(
-                CategoryModel.id == category_id).first()
-            if not category:
-                raise HTTPException(
-                    status_code=404, detail="Category not found")
-            session.delete(category)
+        try:
+            with self._database.session() as session:
+                category = session.query(CategoryModel).filter(
+                    CategoryModel.id == category_id).first()
+                if category is None:
+                    raise CategoryNotFoundByIdException(id=category_id)
+                session.delete(category)
+        except CategoryNotFoundException:
+            raise CategoryNotFoundByIdException(id=category_id)

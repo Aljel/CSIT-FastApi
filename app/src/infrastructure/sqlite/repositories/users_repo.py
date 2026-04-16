@@ -15,9 +15,10 @@ class UserRepository:
             select(self._model)
             .where(self._model.username == username)
         )
-
         try:
             user = session.scalar(query)
+            if user is None:
+                raise UserNotFoundException
             session.flush()
             return user
         except IntegrityError:
