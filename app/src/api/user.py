@@ -3,6 +3,8 @@ from src.schemas.users_schem import UserResponse, UserCreate
 from src.api.depends import user_use_cases
 from src.domain.user.user_use_cases import UserUseCases
 from src.core.exceptions.domain_exceptions import UserUsernameIsNotUniqueException, UserNotFoundByUsernameException
+from src.core.exceptions.domain_exceptions import UserNotFoundByUsernameException, UserUsernameIsNotUniqueException
+from src.services.auth import AuthService
 
 router = APIRouter()
 
@@ -22,7 +24,7 @@ async def create_user(
 @router.get("/users/{username}", response_model=UserResponse, tags=["Users"])
 async def get_user(
     username: str,
-    service: UserUseCases = Depends(user_use_cases)
+    service: UserUseCases = Depends(AuthService.get_current_user)
 ):
     try:
         return await service.get_by_username(username)

@@ -6,6 +6,7 @@ from typing import List
 from src.api.user import router as user_router
 from src.api.post import router as post_router
 from src.api.comment import router as comment_router
+from src.api.auth import router as auth_router
 from src.core.exceptions.domain_exceptions import CategoryNotFoundByIdException, CategoryMemeException, CategoryNameIsNotUniqueException
 
 
@@ -13,6 +14,7 @@ router = APIRouter()
 router.include_router(user_router)
 router.include_router(post_router)
 router.include_router(comment_router)
+router.include_router(auth_router)
 
 
 @router.post("/categories", status_code=status.HTTP_201_CREATED, response_model=CategoryResponse, tags=["Categories"])

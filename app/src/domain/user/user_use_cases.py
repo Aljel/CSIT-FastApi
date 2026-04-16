@@ -5,6 +5,7 @@ from src.schemas.users_schem import UserCreate, UserResponse
 from src.infrastructure.sqlite.models.users_model import UserModel
 from src.core.exceptions.database_exceptions import UserAlreadyExistsException, UserNotFoundException
 from src.core.exceptions.domain_exceptions import UserUsernameIsNotUniqueException, UserNotFoundByUsernameException
+from src.resources.auth import get_password_hash
 
 
 class UserUseCases:
@@ -15,7 +16,7 @@ class UserUseCases:
     async def create(self, data: UserCreate) -> UserResponse:
         user_model = UserModel(
             **data.model_dump(exclude={"password"}),
-            password=data.password,
+            password=get_password_hash(password=data.password),
             last_login=datetime.now(),
             date_joined=datetime.now()
         )
