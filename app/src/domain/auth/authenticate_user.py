@@ -17,14 +17,15 @@ class AuthenticateUserUseCase:
 
     async def execute(
         self,
-        login: str,
+        username: str,
         password: str,
     ) -> UserSchema:
         try:
             with self._database.session() as session:
-                user = self._repo.get(session=session, login=login)
+                user = self._repo.get_by_username(
+                    session=session, username=username)
         except UserNotFoundException:
-            error = UserNotFoundByLoginException(login=login)
+            error = UserNotFoundByUsernameException(username=username)
             logger.error(error.get_detail())
             raise error
 

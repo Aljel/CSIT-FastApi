@@ -24,7 +24,7 @@ async def create_user(
 @router.get("/users/{username}", response_model=UserResponse, tags=["Users"])
 async def get_user(
     username: str,
-    service: UserUseCases = Depends(AuthService.get_current_user)
+    service: UserUseCases = Depends(user_use_cases)
 ):
     try:
         return await service.get_by_username(username)
