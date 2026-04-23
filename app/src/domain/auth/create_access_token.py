@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from jose import jwt
 
-from src.services.auth import SECRET_AUTH_KEY, AUTH_ALGORITHM
+from src.services.auth_serv import SECRET_AUTH_KEY, AUTH_ALGORITHM
 
 
 class CreateAccessTokenUseCase:
@@ -11,10 +11,10 @@ class CreateAccessTokenUseCase:
 
     async def execute(
         self,
-        login: str,
+        username: str,
         expires_delta: timedelta | None = None
     ) -> str:
-        to_encode = {"sub": login}
+        to_encode = {"sub": username}
         if expires_delta:
             expire = datetime.now(timezone.utc) + expires_delta
         else:

@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, status, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from src.schemas.auth import Token
+from src.schemas.auth_schem import Token
 from src.domain.auth.authenticate_user import AuthenticateUserUseCase
 from src.domain.auth.create_access_token import CreateAccessTokenUseCase
 from src.core.exceptions.domain_exceptions import WrongPasswordException, UserNotFoundByUsernameException
@@ -20,7 +20,7 @@ async def login_for_access_token(
         create_access_token_use_case),
 ) -> Token:
     try:
-        user = await auth_use_case.execute(login=form_data.username, password=form_data.password)
+        user = await auth_use_case.execute(username=form_data.username, password=form_data.password)
     except WrongPasswordException as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -31,6 +31,6 @@ async def login_for_access_token(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())
 
-    access_token = await create_token_use_case.execute(login=user.login)
+    access_token = await create_token_use_case.execute(username=user.username)
 
     return Token(access_token=access_token, token_type="bearer")

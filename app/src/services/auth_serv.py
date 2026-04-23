@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 from src.core.exceptions.auth_exceptions import CredentialsException
 from src.core.exceptions.database_exceptions import UserNotFoundException
 from src.schemas.users_schem import UserBase as UserSchema
-from src.resources.auth import oauth2_scheme
+from src.resources.auth_res import oauth2_scheme
 from src.infrastructure.sqlite.database import database as sqlite_database, Database
 from src.infrastructure.sqlite.repositories.users_repo import UserRepository
 
@@ -37,8 +37,9 @@ class AuthService:
 
         try:
             with _database.session() as session:
-                user = _repo.get(session=session, login=username)
+                user = _repo.get_by_username(
+                    session=session, username=username)
         except UserNotFoundException:
             raise CredentialsException(detail=AUTH_EXCEPTION_MESSAGE)
 
-        return UserSchema.model_validate(obj=user)
+        return UserSchema.model_validate(obj=user, from_attributes=True)

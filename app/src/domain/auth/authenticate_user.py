@@ -3,7 +3,7 @@ import logging
 from src.infrastructure.sqlite.database import database
 from src.infrastructure.sqlite.repositories.users_repo import UserRepository
 from src.schemas.users_schem import UserBase as UserSchema
-from src.resources.auth import verify_password
+from src.resources.auth_res import verify_password
 from src.core.exceptions.database_exceptions import UserNotFoundException
 from src.core.exceptions.domain_exceptions import UserNotFoundByUsernameException, WrongPasswordException
 
@@ -34,4 +34,4 @@ class AuthenticateUserUseCase:
             logger.error(error.get_detail())
             raise error
 
-        return UserSchema.model_validate(obj=user)
+        return UserSchema.model_validate(obj=user, from_attributes=True)

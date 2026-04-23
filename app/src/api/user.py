@@ -3,8 +3,7 @@ from src.schemas.users_schem import UserResponse, UserCreate
 from src.api.depends import user_use_cases
 from src.domain.user.user_use_cases import UserUseCases
 from src.core.exceptions.domain_exceptions import UserUsernameIsNotUniqueException, UserNotFoundByUsernameException
-from src.core.exceptions.domain_exceptions import UserNotFoundByUsernameException, UserUsernameIsNotUniqueException
-from src.services.auth import AuthService
+from src.services.auth_serv import AuthService
 
 router = APIRouter()
 
@@ -24,13 +23,16 @@ async def create_user(
 @router.get("/users/{username}", response_model=UserResponse, tags=["Users"])
 async def get_user(
     username: str,
-    service: UserUseCases = Depends(user_use_cases)
+    current_user: UserResponse = Depends(AuthService.get_current_user),
+    service: UserUseCases = Depends(user_use_cases),
 ):
     try:
         return await service.get_by_username(username)
     except UserNotFoundByUsernameException as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=exc.get_detail()
+        )
 
 
 @router.delete("/users/{username}", status_code=status.HTTP_204_NO_CONTENT, tags=["Users"])
