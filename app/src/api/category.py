@@ -4,6 +4,8 @@ from src.api.depends import category_use_cases
 from src.domain.category.category_use_cases import CategoryUseCases
 from typing import List
 from src.core.exceptions.domain_exceptions import CategoryNotFoundByIdException, CategoryMemeException, CategoryNameIsNotUniqueException
+from src.services.auth_serv import AuthService
+from src.schemas.users_schem import UserResponse
 
 router = APIRouter()
 
@@ -11,6 +13,7 @@ router = APIRouter()
 @router.post("/categories", status_code=status.HTTP_201_CREATED, response_model=CategoryResponse, tags=["Categories"])
 async def create_category(
     data: CategoryCreate,
+    current_user: UserResponse = Depends(AuthService.get_current_user),
     service: CategoryUseCases = Depends(category_use_cases)
 ):
     try:
@@ -34,6 +37,7 @@ async def list_categories(
 @router.delete("/categories/{category_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Categories"])
 async def delete_category(
     category_id: int,
+    current_user: UserResponse = Depends(AuthService.get_current_user),
     service: CategoryUseCases = Depends(category_use_cases)
 ):
     try:

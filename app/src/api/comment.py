@@ -3,8 +3,9 @@ from fastapi import HTTPException, APIRouter, status, Depends
 from src.api.depends import comment_use_cases
 from typing import List
 from src.domain.comment.comment_use_cases import CommentUseCases
-from fastapi import APIRouter, status, Depends
 from src.core.exceptions.domain_exceptions import CommentMemeException, CommentNotFoundByIdException, PostNotFoundByIdException
+from src.services.auth_serv import AuthService
+from src.schemas.users_schem import UserResponse
 
 router = APIRouter()
 
@@ -12,6 +13,7 @@ router = APIRouter()
 @router.post("/comments", status_code=status.HTTP_201_CREATED, response_model=CommentResponse, tags=["Comments"])
 async def create_comment(
     data: CommentCreate,
+    current_user: UserResponse = Depends(AuthService.get_current_user),
     service: CommentUseCases = Depends(comment_use_cases)
 ):
     try:
@@ -36,6 +38,7 @@ async def get_post_comments(
 @router.delete("/posts/{post_id}/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Comments"])
 async def delete_comment(
     comment_id: int,
+    current_user: UserResponse = Depends(AuthService.get_current_user),
     service: CommentUseCases = Depends(comment_use_cases)
 ):
     try:

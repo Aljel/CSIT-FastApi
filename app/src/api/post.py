@@ -4,6 +4,7 @@ from src.schemas.posts_schem import PostResponse, PostCreate
 from src.api.depends import post_use_cases
 from src.domain.post.post_use_cases import PostUseCases
 from src.core.exceptions.domain_exceptions import PostNameIsNotUniqueException, PostNotFoundByIdException, PostMemeException
+from src.services.auth_serv import AuthService
 
 
 router = APIRouter()
@@ -24,6 +25,7 @@ async def list_posts(
 @router.get("/posts/{post_id}", response_model=PostResponse, tags=["Posts"])
 async def get_post(
     post_id: int,
+    current_user: PostResponse = Depends(AuthService.get_current_user),
     service: PostUseCases = Depends(post_use_cases)
 ):
     try:
@@ -36,6 +38,7 @@ async def get_post(
 @router.post("/posts", status_code=status.HTTP_201_CREATED, response_model=PostResponse, tags=["Posts"])
 async def create_post(
     data: PostCreate,
+    current_user: PostResponse = Depends(AuthService.get_current_user),
     service: PostUseCases = Depends(post_use_cases)
 ):
     try:
@@ -48,6 +51,7 @@ async def create_post(
 @router.delete("/posts/{post_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Posts"])
 async def delete_post(
     post_id: int,
+    current_user: PostResponse = Depends(AuthService.get_current_user),
     service: PostUseCases = Depends(post_use_cases)
 ):
     try:

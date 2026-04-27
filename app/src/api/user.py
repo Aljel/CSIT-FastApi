@@ -38,8 +38,12 @@ async def get_user(
 @router.delete("/users/{username}", status_code=status.HTTP_204_NO_CONTENT, tags=["Users"])
 async def delete_user(
     username: str,
-    service: UserUseCases = Depends(user_use_cases)
+    service: UserUseCases = Depends(user_use_cases),
+    current_user: UserResponse = Depends(AuthService.get_current_user)
 ):
+    if current_user.username != username:
+        raise HTTPException(
+            status_code=403, detail="Недостаточно прав для удаления этого профиля")
     try:
         await service.delete(username)
         return None
