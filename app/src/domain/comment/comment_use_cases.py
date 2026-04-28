@@ -1,3 +1,4 @@
+import logging
 from fastapi import HTTPException
 from datetime import datetime
 from typing import List
@@ -7,6 +8,8 @@ from src.infrastructure.sqlite.models.comments_model import CommentModel
 from src.schemas.comments_schem import CommentCreate, CommentResponse
 from src.core.exceptions.database_exceptions import PostNotFoundException, CommentNotFoundException, CommentRandomException
 from src.core.exceptions.domain_exceptions import PostNotFoundByIdException, CommentNotFoundByIdException, CommentMemeException
+
+logger = logging.getLogger(__name__)
 
 
 class CommentUseCases:
@@ -24,8 +27,11 @@ class CommentUseCases:
                     created_at=datetime.now()
                 )
                 created = self._repo.create(session, comment)
+                logger.info(f"Комментарий успешно добавлен (ID: {created.id})")
                 return CommentResponse.model_validate(created, from_attributes=True)
         except CommentRandomException:
+            logger.error(f"Ошибка при создании комментария: {
+                         CommentRandomException}")
             raise CommentMemeException()
 
     async def get_by_post(self, post_id: int) -> List[CommentResponse]:
@@ -46,5 +52,8 @@ class CommentUseCases:
                     raise CommentNotFoundByIdException(id=comment_id)
                 self._repo.delete(session, comment)
                 session.commit()
+                logger.info(f"Комментарий ID {comment_id} удален")
         except CommentRandomException:
+            logger.error(f"Ошибка при удалении комментария: {
+                         CommentRandomException}")
             raise CommentMemeException()

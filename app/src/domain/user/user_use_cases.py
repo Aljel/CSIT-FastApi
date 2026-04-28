@@ -1,3 +1,4 @@
+import logging
 from src.infrastructure.sqlite.database import database
 from datetime import datetime
 from src.infrastructure.sqlite.repositories.users_repo import UserRepository
@@ -6,6 +7,8 @@ from src.infrastructure.sqlite.models.users_model import UserModel
 from src.core.exceptions.database_exceptions import UserAlreadyExistsException, UserNotFoundException
 from src.core.exceptions.domain_exceptions import UserUsernameIsNotUniqueException, UserNotFoundByUsernameException
 from src.resources.auth_res import get_password_hash
+
+logger = logging.getLogger(__name__)
 
 
 class UserUseCases:
@@ -25,8 +28,11 @@ class UserUseCases:
         try:
             with self._database.session() as session:
                 user = self._repo.create(session, user_model)
+                logger.info(f"Создан пользователь: {
+                            user.username} (ID: {user.id})")
                 return UserResponse.model_validate(user, from_attributes=True)
         except UserAlreadyExistsException:
+            logger.error(f"Ошибка регистрации: имя {data.username} уже занято")
             raise UserUsernameIsNotUniqueException(
                 username=user_model.username)
 
@@ -36,6 +42,7 @@ class UserUseCases:
                 user = self._repo.get_by_username(session, username)
                 return UserResponse.model_validate(user, from_attributes=True)
         except UserNotFoundException:
+            logger.error(f"Пользователь {username} не найден")
             raise UserNotFoundByUsernameException(username=username)
 
     async def delete(self, username: str) -> None:
@@ -43,5 +50,8 @@ class UserUseCases:
             with self._database.session() as session:
                 user = self._repo.get_by_username(session, username)
                 self._repo.delete(session, user)
+                logger.info(f"Пользователь {username} был удален")
         except UserNotFoundException:
+            logger.error(f"Попытка удаления: пользователь {
+                         username} не найден")
             raise UserNotFoundByUsernameException(username=username)

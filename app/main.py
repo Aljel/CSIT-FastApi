@@ -1,3 +1,4 @@
+import logging
 from src.infrastructure.sqlite.database import database, Base
 import asyncio
 import uvicorn
@@ -5,6 +6,11 @@ import uvicorn
 from src.app import create_app
 
 app = create_app()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
 
 
 @app.on_event("startup")
