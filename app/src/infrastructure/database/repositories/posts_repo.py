@@ -1,6 +1,10 @@
 from typing import Type, List, Optional
 from sqlalchemy.exc import IntegrityError
-from src.core.exceptions.database_exceptions import PostNotFoundException, PostAlreadyExistsException, PostRandomException
+from src.core.exceptions.database_exceptions import (
+    PostNotFoundException,
+    PostAlreadyExistsException,
+    PostRandomException,
+)
 from sqlalchemy.orm import Session
 from src.infrastructure.database.models.posts_model import PostModel
 
@@ -17,10 +21,13 @@ class PostRepository:
 
     def get_published(self, session: Session, limit: int = 10) -> List[PostModel]:
         try:
-            return (session.query(self._model)
-                    .filter(self._model.is_published == True)
-                    .order_by(self._model.pub_date.desc())
-                    .limit(limit).all())
+            return (
+                session.query(self._model)
+                .filter(self._model.is_published == True)
+                .order_by(self._model.pub_date.desc())
+                .limit(limit)
+                .all()
+            )
         except IntegrityError:
             raise PostRandomException()
 
@@ -38,6 +45,30 @@ class PostRepository:
             session.flush()
         except IntegrityError:
             raise PostNotFoundException()
+
+    def get_by_ids(self, session: Session, post_ids: list[int]) -> list[PostModel]:
+        return (
+            session.query(self._model)
+            .filter(
+                self._model.id.in_(post_ids),
+                self._model.is_published == True,
+            )
+            .all()
+        )
+
+    def get_by_likes(self, session: Session, limit: int = 10) -> list[PostModel]:
+        from sqlalchemy import func
+        from src.infrastructure.database.models.like_model import PostLikeModel
+
+        return (
+            session.query(self._model)
+            .outerjoin(PostLikeModel, PostLikeModel.post_id == self._model.id)
+            .filter(self._model.is_published == True)
+            .group_by(self._model.id)
+            .order_by(func.count(PostLikeModel.id).desc(), self._model.pub_date.desc())
+            .limit(limit)
+            .all()
+        )
 
     def update(self, session: Session, post: PostModel, data: dict) -> PostModel:
         try:

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from src.api.base import router as base_router
@@ -13,6 +14,8 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    app.mount("/media", StaticFiles(directory="media"), name="media")
 
     app.include_router(base_router, prefix="/base", tags=["Base APIs"])
 

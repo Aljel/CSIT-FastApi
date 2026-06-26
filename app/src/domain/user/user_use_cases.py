@@ -4,8 +4,14 @@ from datetime import datetime
 from src.infrastructure.database.repositories.users_repo import UserRepository
 from src.schemas.users_schem import UserCreate, UserUpdate, UserResponse
 from src.infrastructure.database.models.users_model import UserModel
-from src.core.exceptions.database_exceptions import UserAlreadyExistsException, UserNotFoundException
-from src.core.exceptions.domain_exceptions import UserUsernameIsNotUniqueException, UserNotFoundByUsernameException
+from src.core.exceptions.database_exceptions import (
+    UserAlreadyExistsException,
+    UserNotFoundException,
+)
+from src.core.exceptions.domain_exceptions import (
+    UserUsernameIsNotUniqueException,
+    UserNotFoundByUsernameException,
+)
 from src.resources.auth_res import get_password_hash
 
 logger = logging.getLogger(__name__)
@@ -22,7 +28,7 @@ class UserUseCases:
             **data.model_dump(exclude={"password"}),
             password=get_password_hash(password=data.password),
             last_login=datetime.now(),
-            date_joined=datetime.now()
+            date_joined=datetime.now(),
         )
         print(user_model.password)
         try:
@@ -33,8 +39,7 @@ class UserUseCases:
                 return UserResponse.model_validate(user, from_attributes=True)
         except UserAlreadyExistsException:
             logger.error(f"Ошибка регистрации: имя {data.username} уже занято")
-            raise UserUsernameIsNotUniqueException(
-                username=user_model.username)
+            raise UserUsernameIsNotUniqueException(username=user_model.username)
 
     async def get_by_username(self, username: str) -> UserResponse:
         try:
@@ -49,7 +54,8 @@ class UserUseCases:
         update_data = data.model_dump(exclude_unset=True)
         if "password" in update_data and update_data["password"] is not None:
             update_data["password"] = get_password_hash(
-                password=update_data["password"])
+                password=update_data["password"]
+            )
         try:
             with self._database.session() as session:
                 user = self._repo.get_by_username(session, username)

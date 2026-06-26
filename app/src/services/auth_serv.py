@@ -13,7 +13,8 @@ from src.infrastructure.database.repositories.users_repo import UserRepository
 
 AUTH_EXCEPTION_MESSAGE = "Невозможно проверить данные авторизации"
 SECRET_AUTH_KEY = SecretStr(
-    "aF75A92Cd9s10KGL4nLdt1r85XRtZ7APNO6NheGeKdRBhhc9oObQywxmqPF")
+    "aF75A92Cd9s10KGL4nLdt1r85XRtZ7APNO6NheGeKdRBhhc9oObQywxmqPF"
+)
 AUTH_ALGORITHM = "HS256"
 
 
@@ -37,8 +38,7 @@ class AuthService:
 
         try:
             with _database.session() as session:
-                user = _repo.get_by_username(
-                    session=session, username=username)
+                user = _repo.get_by_username(session=session, username=username)
                 return UserSchema.model_validate(obj=user, from_attributes=True)
         except UserNotFoundException:
             raise CredentialsException(detail=AUTH_EXCEPTION_MESSAGE)

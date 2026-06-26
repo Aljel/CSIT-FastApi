@@ -19,6 +19,5 @@ class UserModel(Base):
     is_superuser: Mapped[bool]
     last_login: Mapped[datetime]
     date_joined: Mapped[datetime]
-    posts: Mapped["PostModel"] = relationship(back_populates="author")
-    comments: Mapped["CommentModel"] = relationship(
-        back_populates="author")
+    posts: Mapped[list["PostModel"]] = relationship(back_populates="author")
+    comments: Mapped[list["CommentModel"]] = relationship(back_populates="author")

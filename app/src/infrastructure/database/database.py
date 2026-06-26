@@ -9,7 +9,8 @@ from sqlalchemy.ext.declarative import declarative_base
 class Database:
     def __init__(self):
         self._db_url = os.getenv(
-            "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/csit_fastapi")
+            "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/csit_fastapi"
+        )
         self._engine = create_engine(self._db_url)
         self._Session = sessionmaker(bind=self._engine)
 

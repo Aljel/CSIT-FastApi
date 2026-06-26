@@ -1,16 +1,19 @@
 from datetime import datetime
 from src.infrastructure.database.database import Base
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 
-class PostLikeModel(Base):
-    __tablename__ = "post_like"
-    __table_args__ = (UniqueConstraint("post_id", "user_id"),)
+class PostImageModel(Base):
+    __tablename__ = "post_image"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     post_id: Mapped[int] = mapped_column(ForeignKey("blog_post.id", ondelete="CASCADE"))
-    user_id: Mapped[int] = mapped_column(ForeignKey("auth_user.id", ondelete="CASCADE"))
+    file_path: Mapped[str]
+    file_name: Mapped[str]
+    file_size: Mapped[int]
+    mime_type: Mapped[str]
+    sort_order: Mapped[int] = mapped_column(default=0)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
-    post: Mapped["PostModel"] = relationship(back_populates="likes")
+    post: Mapped["PostModel"] = relationship(back_populates="images")

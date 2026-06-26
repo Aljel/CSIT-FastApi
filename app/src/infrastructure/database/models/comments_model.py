@@ -2,6 +2,7 @@ from datetime import datetime
 from src.infrastructure.database.database import Base
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
+
 # from .posts import PostModel
 # from .users import UserModel
 
@@ -12,8 +13,11 @@ class CommentModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str]
     created_at: Mapped[datetime]
-    post_id: Mapped[int] = mapped_column(ForeignKey("blog_post.id"))
+    post_id: Mapped[int] = mapped_column(ForeignKey("blog_post.id", ondelete="CASCADE"))
     author_id: Mapped[int] = mapped_column(ForeignKey("auth_user.id"))
 
     post: Mapped["PostModel"] = relationship(back_populates="comments")
     author: Mapped["UserModel"] = relationship(back_populates="comments")
+    images: Mapped[list["CommentImageModel"]] = relationship(
+        back_populates="comment", order_by="CommentImageModel.sort_order", passive_deletes=True
+    )

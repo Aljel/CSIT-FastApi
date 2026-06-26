@@ -1,65 +1,87 @@
 from fastapi import APIRouter, status, Depends, HTTPException
-from src.schemas.categoties_schem import CategoryResponse, CategoryCreate, CategoryUpdate
+from src.schemas.categoties_schem import (
+    CategoryResponse,
+    CategoryCreate,
+    CategoryUpdate,
+)
 from src.api.depends import category_use_cases
 from src.domain.category.category_use_cases import CategoryUseCases
 from typing import List
-from src.core.exceptions.domain_exceptions import CategoryNotFoundByIdException, CategoryMemeException, CategoryNameIsNotUniqueException
+from src.core.exceptions.domain_exceptions import (
+    CategoryNotFoundByIdException,
+    CategoryMemeException,
+    CategoryNameIsNotUniqueException,
+)
 from src.services.auth_serv import AuthService
 from src.schemas.users_schem import UserResponse
 
 router = APIRouter()
 
 
-@router.post("/categories", status_code=status.HTTP_201_CREATED, response_model=CategoryResponse, tags=["Categories"])
+@router.post(
+    "/categories",
+    status_code=status.HTTP_201_CREATED,
+    response_model=CategoryResponse,
+    tags=["Categories"],
+)
 async def create_category(
     data: CategoryCreate,
     current_user: UserResponse = Depends(AuthService.get_current_user),
-    service: CategoryUseCases = Depends(category_use_cases)
+    service: CategoryUseCases = Depends(category_use_cases),
 ):
     try:
         return await service.create(data)
     except CategoryNameIsNotUniqueException as exc:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail())
+            status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail()
+        )
 
 
 @router.get("/categories", response_model=List[CategoryResponse], tags=["Categories"])
-async def list_categories(
-    service: CategoryUseCases = Depends(category_use_cases)
-):
+async def list_categories(service: CategoryUseCases = Depends(category_use_cases)):
     try:
         return await service.get_all()
     except CategoryMemeException as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
+        )
 
 
-@router.put("/categories/{category_id}", response_model=CategoryResponse, tags=["Categories"])
+@router.put(
+    "/categories/{category_id}", response_model=CategoryResponse, tags=["Categories"]
+)
 async def update_category(
     category_id: int,
     data: CategoryUpdate,
     current_user: UserResponse = Depends(AuthService.get_current_user),
-    service: CategoryUseCases = Depends(category_use_cases)
+    service: CategoryUseCases = Depends(category_use_cases),
 ):
     try:
         return await service.update(category_id, data)
     except CategoryNotFoundByIdException as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
+        )
     except CategoryNameIsNotUniqueException as exc:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail())
+            status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail()
+        )
 
 
-@router.delete("/categories/{category_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Categories"])
+@router.delete(
+    "/categories/{category_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    tags=["Categories"],
+)
 async def delete_category(
     category_id: int,
     current_user: UserResponse = Depends(AuthService.get_current_user),
-    service: CategoryUseCases = Depends(category_use_cases)
+    service: CategoryUseCases = Depends(category_use_cases),
 ):
     try:
         await service.delete(category_id)
         return None
     except CategoryNotFoundByIdException as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
+        )

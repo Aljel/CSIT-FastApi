@@ -1,7 +1,11 @@
 from typing import Type, List, Optional
 from sqlalchemy.orm import Session
 from src.infrastructure.database.models.categories_model import CategoryModel
-from src.core.exceptions.database_exceptions import CategoryNotFoundException, CategoryAlreadyExistsException, CategoryRandomException
+from src.core.exceptions.database_exceptions import (
+    CategoryNotFoundException,
+    CategoryAlreadyExistsException,
+    CategoryRandomException,
+)
 from sqlalchemy.exc import IntegrityError
 
 
@@ -11,7 +15,9 @@ class CategoryRepository:
 
     def get_by_id(self, session: Session, category_id: int) -> Optional[CategoryModel]:
         try:
-            return session.query(self._model).filter(self._model.id == category_id).first()
+            return (
+                session.query(self._model).filter(self._model.id == category_id).first()
+            )
         except IntegrityError:
             raise CategoryNotFoundException()
 
@@ -27,21 +33,4 @@ class CategoryRepository:
             session.flush()
             return category
         except IntegrityError:
-            raise CategoryAlreadyExistsException
-
-    def delete(self, session: Session, category: CategoryModel) -> None:
-        try:
-            session.delete(category)
-            session.flush()
-        except IntegrityError:
-            raise CategoryNotFoundException()
-
-    def update(self, session: Session, category: CategoryModel, data: dict) -> CategoryModel:
-        try:
-            for key, value in data.items():
-                if value is not None:
-                    setattr(category, key, value)
-            session.flush()
-            return category
-        except IntegrityError:
-            raise CategoryAlreadyExistsException
+            raise CategoryAlreadyExistsException()

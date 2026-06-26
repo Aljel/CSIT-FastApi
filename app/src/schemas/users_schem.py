@@ -24,8 +24,7 @@ class UserCreate(UserBase):
         if not any(char.isdigit() for char in value):
             raise ValueError("Пароль должен содержать хотя бы одну цифру.")
         if not any(char.isupper() for char in value):
-            raise ValueError(
-                "Пароль должен содержать хотя бы одну заглавную букву.")
+            raise ValueError("Пароль должен содержать хотя бы одну заглавную букву.")
         return value
 
     @field_validator("username", mode="after")
@@ -34,7 +33,7 @@ class UserCreate(UserBase):
         if any(x in username for x in "!@#$%^&*№;%:?"):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-                detail="Имя пользователя не должно содержать специальных символов"
+                detail="Имя пользователя не должно содержать специальных символов",
             )
 
         return username
@@ -54,8 +53,7 @@ class UserUpdate(BaseModel):
         if not any(char.isdigit() for char in value):
             raise ValueError("Пароль должен содержать хотя бы одну цифру.")
         if not any(char.isupper() for char in value):
-            raise ValueError(
-                "Пароль должен содержать хотя бы одну заглавную букву.")
+            raise ValueError("Пароль должен содержать хотя бы одну заглавную букву.")
         return value
 
 

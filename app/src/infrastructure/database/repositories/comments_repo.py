@@ -1,7 +1,10 @@
 from typing import Type, List, Optional
 from sqlalchemy.orm import Session
 from src.infrastructure.database.models.comments_model import CommentModel
-from src.core.exceptions.database_exceptions import CommentNotFoundException, CommentRandomException
+from src.core.exceptions.database_exceptions import (
+    CommentNotFoundException,
+    CommentRandomException,
+)
 from sqlalchemy.exc import IntegrityError
 
 
@@ -11,15 +14,20 @@ class CommentRepository:
 
     def get_by_id(self, session: Session, comment_id: int) -> Optional[CommentModel]:
         try:
-            return session.query(self._model).filter(self._model.id == comment_id).first()
+            return (
+                session.query(self._model).filter(self._model.id == comment_id).first()
+            )
         except IntegrityError:
             raise CommentNotFoundException()
 
     def get_by_post_id(self, session: Session, post_id: int) -> List[CommentModel]:
         try:
-            return (session.query(self._model)
-                    .filter(self._model.post_id == post_id)
-                    .order_by(self._model.created_at.asc()).all())
+            return (
+                session.query(self._model)
+                .filter(self._model.post_id == post_id)
+                .order_by(self._model.created_at.asc())
+                .all()
+            )
         except IntegrityError:
             raise CommentNotFoundException()
 
@@ -38,7 +46,9 @@ class CommentRepository:
         except IntegrityError:
             raise CommentNotFoundException()
 
-    def update(self, session: Session, comment: CommentModel, data: dict) -> CommentModel:
+    def update(
+        self, session: Session, comment: CommentModel, data: dict
+    ) -> CommentModel:
         for key, value in data.items():
             setattr(comment, key, value)
         return comment

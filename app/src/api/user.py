@@ -2,22 +2,30 @@ from fastapi import APIRouter, status, Depends, HTTPException
 from src.schemas.users_schem import UserResponse, UserCreate, UserUpdate
 from src.api.depends import user_use_cases
 from src.domain.user.user_use_cases import UserUseCases
-from src.core.exceptions.domain_exceptions import UserUsernameIsNotUniqueException, UserNotFoundByUsernameException
+from src.core.exceptions.domain_exceptions import (
+    UserUsernameIsNotUniqueException,
+    UserNotFoundByUsernameException,
+)
 from src.services.auth_serv import AuthService
 
 router = APIRouter()
 
 
-@router.post("/users", status_code=status.HTTP_201_CREATED, response_model=UserResponse, tags=["Users"])
+@router.post(
+    "/users",
+    status_code=status.HTTP_201_CREATED,
+    response_model=UserResponse,
+    tags=["Users"],
+)
 async def create_user(
-    data: UserCreate,
-    service: UserUseCases = Depends(user_use_cases)
+    data: UserCreate, service: UserUseCases = Depends(user_use_cases)
 ):
     try:
         return await service.create(data)
     except UserUsernameIsNotUniqueException as exc:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail())
+            status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail()
+        )
 
 
 @router.get("/users/{username}", response_model=UserResponse, tags=["Users"])
@@ -30,8 +38,7 @@ async def get_user(
         return await service.get_by_username(username)
     except UserNotFoundByUsernameException as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=exc.get_detail()
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
         )
 
 
@@ -40,33 +47,40 @@ async def update_user(
     username: str,
     data: UserUpdate,
     current_user: UserResponse = Depends(AuthService.get_current_user),
-    service: UserUseCases = Depends(user_use_cases)
+    service: UserUseCases = Depends(user_use_cases),
 ):
     if current_user.username != username:
         raise HTTPException(
-            status_code=403, detail="Недостаточно прав для редактирования этого профиля")
+            status_code=403, detail="Недостаточно прав для редактирования этого профиля"
+        )
     try:
         return await service.update(username, data)
     except UserNotFoundByUsernameException as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
+        )
     except UserUsernameIsNotUniqueException as exc:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail())
+            status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail()
+        )
 
 
-@router.delete("/users/{username}", status_code=status.HTTP_204_NO_CONTENT, tags=["Users"])
+@router.delete(
+    "/users/{username}", status_code=status.HTTP_204_NO_CONTENT, tags=["Users"]
+)
 async def delete_user(
     username: str,
     service: UserUseCases = Depends(user_use_cases),
-    current_user: UserResponse = Depends(AuthService.get_current_user)
+    current_user: UserResponse = Depends(AuthService.get_current_user),
 ):
     if current_user.username != username:
         raise HTTPException(
-            status_code=403, detail="Недостаточно прав для удаления этого профиля")
+            status_code=403, detail="Недостаточно прав для удаления этого профиля"
+        )
     try:
         await service.delete(username)
         return None
     except UserNotFoundByUsernameException as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
+        )

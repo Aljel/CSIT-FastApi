@@ -3,7 +3,10 @@ from sqlalchemy.orm import session
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from src.infrastructure.database.models.users_model import UserModel
-from src.core.exceptions.database_exceptions import UserNotFoundException, UserAlreadyExistsException
+from src.core.exceptions.database_exceptions import (
+    UserNotFoundException,
+    UserAlreadyExistsException,
+)
 
 
 class UserRepository:
@@ -11,10 +14,7 @@ class UserRepository:
         self._model: Type[UserModel] = UserModel
 
     def get_by_username(self, session: session, username: str) -> UserModel:
-        query = (
-            select(self._model)
-            .where(self._model.username == username)
-        )
+        query = select(self._model).where(self._model.username == username)
         try:
             user = session.scalar(query)
             if user is None:

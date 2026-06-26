@@ -1,6 +1,7 @@
 from datetime import datetime
 from src.infrastructure.database.database import Base
 from sqlalchemy.orm import relationship, Mapped, mapped_column
+
 # from .posts import PostModel
 
 
