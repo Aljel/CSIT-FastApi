@@ -60,7 +60,7 @@ class RecommendationUseCases:
             liked_ids_set = set(liked_ids)
 
             if not liked_ids:
-                return self._get_trending(session, limit, liked_ids_set)
+                return await self._get_trending(session, limit, liked_ids_set)
 
             embeddings = self._embedding_repo.get_all(session)
             emb_by_post = {e.post_id: np.array(
@@ -69,7 +69,7 @@ class RecommendationUseCases:
             liked_vecs = [emb_by_post[pid]
                           for pid in liked_ids if pid in emb_by_post]
             if not liked_vecs:
-                return self._get_trending(session, limit, liked_ids_set)
+                return await self._get_trending(session, limit, liked_ids_set)
 
             user_vec = np.mean(liked_vecs, axis=0)
             user_vec = user_vec / (user_vec @ user_vec) ** 0.5
@@ -99,7 +99,7 @@ class RecommendationUseCases:
 
     async def get_trending(self, limit: int = 10) -> list[PostResponse]:
         with self._database.session() as session:
-            return self._get_trending(session, limit, set())
+            return await self._get_trending(session, limit, set())
 
     async def _get_trending(
         self, session, limit: int, liked_ids_set: set
