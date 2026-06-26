@@ -1,7 +1,7 @@
 import logging
 
-from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.users_repo import UserRepository
+from src.infrastructure.database.database import database
+from src.infrastructure.database.repositories.users_repo import UserRepository
 from src.schemas.users_schem import UserBase as UserSchema
 from src.resources.auth_res import verify_password
 from src.core.exceptions.database_exceptions import UserNotFoundException
@@ -24,14 +24,14 @@ class AuthenticateUserUseCase:
             with self._database.session() as session:
                 user = self._repo.get_by_username(
                     session=session, username=username)
+                if not verify_password(plain_password=password, hashed_password=user.password):
+                    error = WrongPasswordException()
+                    logger.error(error.get_detail())
+                    raise error
+                return UserSchema.model_validate(obj=user, from_attributes=True)
         except UserNotFoundException:
             error = UserNotFoundByUsernameException(username=username)
             logger.error(error.get_detail())
             raise error
-
-        if not verify_password(plain_password=password, hashed_password=user.password):
-            error = WrongPasswordException()
-            logger.error(error.get_detail())
-            raise error
-
-        return UserSchema.model_validate(obj=user, from_attributes=True)
+        except WrongPasswordException:
+            raise

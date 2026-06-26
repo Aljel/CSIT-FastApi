@@ -6,10 +6,10 @@ from jose import JWTError, jwt
 
 from src.core.exceptions.auth_exceptions import CredentialsException
 from src.core.exceptions.database_exceptions import UserNotFoundException
-from src.schemas.users_schem import UserBase as UserSchema
+from src.schemas.users_schem import UserResponse as UserSchema
 from src.resources.auth_res import oauth2_scheme
-from src.infrastructure.sqlite.database import database as sqlite_database, Database
-from src.infrastructure.sqlite.repositories.users_repo import UserRepository
+from src.infrastructure.database.database import database, Database
+from src.infrastructure.database.repositories.users_repo import UserRepository
 
 AUTH_EXCEPTION_MESSAGE = "Невозможно проверить данные авторизации"
 SECRET_AUTH_KEY = SecretStr(
@@ -20,7 +20,7 @@ AUTH_ALGORITHM = "HS256"
 class AuthService:
     @staticmethod
     async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-        _database: Database = sqlite_database
+        _database: Database = database
         _repo: UserRepository = UserRepository()
 
         try:
@@ -39,7 +39,6 @@ class AuthService:
             with _database.session() as session:
                 user = _repo.get_by_username(
                     session=session, username=username)
+                return UserSchema.model_validate(obj=user, from_attributes=True)
         except UserNotFoundException:
             raise CredentialsException(detail=AUTH_EXCEPTION_MESSAGE)
-
-        return UserSchema.model_validate(obj=user, from_attributes=True)

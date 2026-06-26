@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Depends, HTTPException
-from src.schemas.categoties_schem import CategoryResponse, CategoryCreate
+from src.schemas.categoties_schem import CategoryResponse, CategoryCreate, CategoryUpdate
 from src.api.depends import category_use_cases
 from src.domain.category.category_use_cases import CategoryUseCases
 from typing import List
@@ -32,6 +32,23 @@ async def list_categories(
     except CategoryMemeException as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())
+
+
+@router.put("/categories/{category_id}", response_model=CategoryResponse, tags=["Categories"])
+async def update_category(
+    category_id: int,
+    data: CategoryUpdate,
+    current_user: UserResponse = Depends(AuthService.get_current_user),
+    service: CategoryUseCases = Depends(category_use_cases)
+):
+    try:
+        return await service.update(category_id, data)
+    except CategoryNotFoundByIdException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())
+    except CategoryNameIsNotUniqueException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail())
 
 
 @router.delete("/categories/{category_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Categories"])

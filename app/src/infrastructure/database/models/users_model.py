@@ -1,5 +1,5 @@
 from datetime import datetime
-from src.infrastructure.sqlite.database import Base
+from src.infrastructure.database.database import Base
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .posts_model import PostModel
 from .comments_model import CommentModel

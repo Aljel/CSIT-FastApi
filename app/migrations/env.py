@@ -5,11 +5,11 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from src.infrastructure.sqlite.database import Base
-from src.infrastructure.sqlite.models.users_model import UserModel
-from src.infrastructure.sqlite.models.categories_model import CategoryModel
-from src.infrastructure.sqlite.models.posts_model import PostModel
-from src.infrastructure.sqlite.models.comments_model import CommentModel
+from src.infrastructure.database.database import Base
+from src.infrastructure.database.models.users_model import UserModel
+from src.infrastructure.database.models.categories_model import CategoryModel
+from src.infrastructure.database.models.posts_model import PostModel
+from src.infrastructure.database.models.comments_model import CommentModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

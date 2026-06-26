@@ -11,6 +11,10 @@ class CommentCreate(CommentBase):
     author_id: int
 
 
+class CommentUpdate(BaseModel):
+    text: str = Field(description='Текст комментария')
+
+
 class CommentResponse(CommentBase):
     id: int
     author_id: int

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Depends, HTTPException
-from src.schemas.users_schem import UserResponse, UserCreate
+from src.schemas.users_schem import UserResponse, UserCreate, UserUpdate
 from src.api.depends import user_use_cases
 from src.domain.user.user_use_cases import UserUseCases
 from src.core.exceptions.domain_exceptions import UserUsernameIsNotUniqueException, UserNotFoundByUsernameException
@@ -33,6 +33,26 @@ async def get_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=exc.get_detail()
         )
+
+
+@router.put("/users/{username}", response_model=UserResponse, tags=["Users"])
+async def update_user(
+    username: str,
+    data: UserUpdate,
+    current_user: UserResponse = Depends(AuthService.get_current_user),
+    service: UserUseCases = Depends(user_use_cases)
+):
+    if current_user.username != username:
+        raise HTTPException(
+            status_code=403, detail="Недостаточно прав для редактирования этого профиля")
+    try:
+        return await service.update(username, data)
+    except UserNotFoundByUsernameException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())
+    except UserUsernameIsNotUniqueException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail())
 
 
 @router.delete("/users/{username}", status_code=status.HTTP_204_NO_CONTENT, tags=["Users"])

@@ -1,6 +1,6 @@
 from typing import Type, List, Optional
 from sqlalchemy.orm import Session
-from src.infrastructure.sqlite.models.comments_model import CommentModel
+from src.infrastructure.database.models.comments_model import CommentModel
 from src.core.exceptions.database_exceptions import CommentNotFoundException, CommentRandomException
 from sqlalchemy.exc import IntegrityError
 
@@ -37,3 +37,8 @@ class CommentRepository:
             session.flush()
         except IntegrityError:
             raise CommentNotFoundException()
+
+    def update(self, session: Session, comment: CommentModel, data: dict) -> CommentModel:
+        for key, value in data.items():
+            setattr(comment, key, value)
+        return comment

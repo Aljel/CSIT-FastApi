@@ -1,5 +1,5 @@
 from datetime import datetime
-from src.infrastructure.sqlite.database import Base
+from src.infrastructure.database.database import Base
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .comments_model import CommentModel
@@ -26,3 +26,4 @@ class PostModel(Base):
     author: Mapped["UserModel"] = relationship(back_populates="posts")
     category: Mapped["CategoryModel"] = relationship(back_populates="posts")
     comments: Mapped["CommentModel"] = relationship(back_populates="post")
+    likes: Mapped[list["PostLikeModel"]] = relationship(back_populates="post")

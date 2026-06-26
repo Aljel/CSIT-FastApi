@@ -2,7 +2,7 @@ from typing import Type, List, Optional
 from sqlalchemy.exc import IntegrityError
 from src.core.exceptions.database_exceptions import PostNotFoundException, PostAlreadyExistsException, PostRandomException
 from sqlalchemy.orm import Session
-from src.infrastructure.sqlite.models.posts_model import PostModel
+from src.infrastructure.database.models.posts_model import PostModel
 
 
 class PostRepository:
@@ -38,3 +38,13 @@ class PostRepository:
             session.flush()
         except IntegrityError:
             raise PostNotFoundException()
+
+    def update(self, session: Session, post: PostModel, data: dict) -> PostModel:
+        try:
+            for key, value in data.items():
+                if value is not None:
+                    setattr(post, key, value)
+            session.flush()
+            return post
+        except IntegrityError:
+            raise PostAlreadyExistsException()

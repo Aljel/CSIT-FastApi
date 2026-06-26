@@ -2,7 +2,7 @@ from typing import Type
 from sqlalchemy.orm import session
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from src.infrastructure.sqlite.models.users_model import UserModel
+from src.infrastructure.database.models.users_model import UserModel
 from src.core.exceptions.database_exceptions import UserNotFoundException, UserAlreadyExistsException
 
 
@@ -38,3 +38,13 @@ class UserRepository:
             session.flush()
         except IntegrityError:
             raise UserNotFoundException()
+
+    def update(self, session: session, user: UserModel, data: dict) -> UserModel:
+        try:
+            for key, value in data.items():
+                if value is not None:
+                    setattr(user, key, value)
+            session.flush()
+            return user
+        except IntegrityError:
+            raise UserAlreadyExistsException()

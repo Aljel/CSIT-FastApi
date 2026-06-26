@@ -1,5 +1,5 @@
 import logging
-from src.infrastructure.sqlite.database import database, Base
+from src.infrastructure.database.database import database, Base
 import asyncio
 import uvicorn
 
@@ -15,7 +15,7 @@ logging.basicConfig(
 
 @app.on_event("startup")
 def startup():
-    from src.infrastructure.sqlite.models import users_model, posts_model, comments_model, categories_model
+    from src.infrastructure.database.models import users_model, posts_model, comments_model, categories_model, like_model
     Base.metadata.create_all(bind=database._engine)  # используем _engine
 
 

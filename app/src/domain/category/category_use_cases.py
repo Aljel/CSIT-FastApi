@@ -1,10 +1,10 @@
 import logging
 from fastapi import HTTPException, status
 from typing import List
-from src.infrastructure.sqlite.database import database
-from src.infrastructure.sqlite.repositories.categories_repo import CategoryRepository
-from src.infrastructure.sqlite.models.categories_model import CategoryModel
-from src.schemas.categoties_schem import CategoryCreate, CategoryResponse
+from src.infrastructure.database.database import database
+from src.infrastructure.database.repositories.categories_repo import CategoryRepository
+from src.infrastructure.database.models.categories_model import CategoryModel
+from src.schemas.categoties_schem import CategoryCreate, CategoryUpdate, CategoryResponse
 from src.core.exceptions.database_exceptions import CategoryNotFoundException, CategoryAlreadyExistsException, CategoryRandomException
 from src.core.exceptions.domain_exceptions import CategoryNotFoundByIdException, CategoryMemeException, CategoryNameIsNotUniqueException
 
@@ -35,6 +35,23 @@ class CategoryUseCases:
                 return [CategoryResponse.model_validate(c, from_attributes=True) for c in categories]
         except CategoryRandomException:
             raise CategoryMemeException()
+
+    async def update(self, category_id: int, data: CategoryUpdate) -> CategoryResponse:
+        update_data = data.model_dump(exclude_unset=True)
+        try:
+            with self._database.session() as session:
+                category = self._repo.get_by_id(session, category_id)
+                if category is None:
+                    raise CategoryNotFoundByIdException(id=category_id)
+                updated = self._repo.update(
+                    session, category, update_data)
+                logger.info(f"Категория ID {category_id} обновлена")
+                return CategoryResponse.model_validate(updated, from_attributes=True)
+        except CategoryNotFoundException:
+            raise CategoryNotFoundByIdException(id=category_id)
+        except CategoryAlreadyExistsException:
+            raise CategoryNameIsNotUniqueException(
+                title=data.title or "")
 
     async def delete(self, category_id: int) -> None:
         try:

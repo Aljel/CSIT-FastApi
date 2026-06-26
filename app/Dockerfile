@@ -7,7 +7,6 @@ COPY alembic.ini /app/
 COPY requirements.txt /app/
 COPY start.sh /app/
 COPY main.py /app/
-COPY sqlite.db /app/
 
 ENV PYTHONPATH=/app/src
 WORKDIR /app

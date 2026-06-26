@@ -1,6 +1,6 @@
 from typing import Type, List, Optional
 from sqlalchemy.orm import Session
-from src.infrastructure.sqlite.models.categories_model import CategoryModel
+from src.infrastructure.database.models.categories_model import CategoryModel
 from src.core.exceptions.database_exceptions import CategoryNotFoundException, CategoryAlreadyExistsException, CategoryRandomException
 from sqlalchemy.exc import IntegrityError
 
@@ -35,3 +35,13 @@ class CategoryRepository:
             session.flush()
         except IntegrityError:
             raise CategoryNotFoundException()
+
+    def update(self, session: Session, category: CategoryModel, data: dict) -> CategoryModel:
+        try:
+            for key, value in data.items():
+                if value is not None:
+                    setattr(category, key, value)
+            session.flush()
+            return category
+        except IntegrityError:
+            raise CategoryAlreadyExistsException

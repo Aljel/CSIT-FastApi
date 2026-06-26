@@ -40,6 +40,25 @@ class UserCreate(UserBase):
         return username
 
 
+class UserUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    password: Optional[str] = Field(None, min_length=8)
+
+    @field_validator("password")
+    @classmethod
+    def validate_password_strength(cls, value: str) -> str:
+        if value is None:
+            return value
+        if not any(char.isdigit() for char in value):
+            raise ValueError("Пароль должен содержать хотя бы одну цифру.")
+        if not any(char.isupper() for char in value):
+            raise ValueError(
+                "Пароль должен содержать хотя бы одну заглавную букву.")
+        return value
+
+
 class UserResponse(UserBase):
     id: int
     is_staff: bool

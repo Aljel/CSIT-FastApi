@@ -1,9 +1,9 @@
 import logging
-from src.infrastructure.sqlite.database import database
+from src.infrastructure.database.database import database
 from datetime import datetime
-from src.infrastructure.sqlite.repositories.users_repo import UserRepository
-from src.schemas.users_schem import UserCreate, UserResponse
-from src.infrastructure.sqlite.models.users_model import UserModel
+from src.infrastructure.database.repositories.users_repo import UserRepository
+from src.schemas.users_schem import UserCreate, UserUpdate, UserResponse
+from src.infrastructure.database.models.users_model import UserModel
 from src.core.exceptions.database_exceptions import UserAlreadyExistsException, UserNotFoundException
 from src.core.exceptions.domain_exceptions import UserUsernameIsNotUniqueException, UserNotFoundByUsernameException
 from src.resources.auth_res import get_password_hash
@@ -44,6 +44,22 @@ class UserUseCases:
         except UserNotFoundException:
             logger.error(f"Пользователь {username} не найден")
             raise UserNotFoundByUsernameException(username=username)
+
+    async def update(self, username: str, data: UserUpdate) -> UserResponse:
+        update_data = data.model_dump(exclude_unset=True)
+        if "password" in update_data and update_data["password"] is not None:
+            update_data["password"] = get_password_hash(
+                password=update_data["password"])
+        try:
+            with self._database.session() as session:
+                user = self._repo.get_by_username(session, username)
+                updated = self._repo.update(session, user, update_data)
+                logger.info(f"Пользователь {username} обновлен")
+                return UserResponse.model_validate(updated, from_attributes=True)
+        except UserNotFoundException:
+            raise UserNotFoundByUsernameException(username=username)
+        except UserAlreadyExistsException:
+            raise UserUsernameIsNotUniqueException(username=username)
 
     async def delete(self, username: str) -> None:
         try:
