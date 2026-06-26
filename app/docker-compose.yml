@@ -16,8 +16,13 @@ services:
       - db
     volumes:
       - ./src:/app/src
+      - ./migrations:/app/migrations
+      - ./alembic.ini:/app/alembic.ini
+      - ./start.sh:/app/start.sh
     env_file:
       - env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/csit_fastapi
     ports:
       - '127.0.0.1:8020:8000'
     build:
