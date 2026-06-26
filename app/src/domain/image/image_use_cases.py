@@ -76,7 +76,7 @@ class ImageUseCases:
             created_at=img.created_at,
         )
 
-    def upload_post_images(
+    async def upload_post_images(
         self, post_id: int, files: List[UploadFile], user_id: int
     ) -> list[PostImageResponse]:
         with self._database.session() as session:
@@ -106,12 +106,12 @@ class ImageUseCases:
                 results.append(self._to_post_image_response(img))
             return results
 
-    def get_post_images(self, post_id: int) -> list[PostImageResponse]:
+    async def get_post_images(self, post_id: int) -> list[PostImageResponse]:
         with self._database.session() as session:
             imgs = self._repo.get_post_images(session, post_id)
             return [self._to_post_image_response(img) for img in imgs]
 
-    def delete_post_image(self, image_id: int, user_id: int) -> None:
+    async def delete_post_image(self, image_id: int, user_id: int) -> None:
         with self._database.session() as session:
             img = self._repo.get_post_image_by_id(session, image_id)
             if img is None:
@@ -124,7 +124,7 @@ class ImageUseCases:
             self._delete_file(img.file_path)
             self._repo.delete_post_image(session, img)
 
-    def upload_comment_images(
+    async def upload_comment_images(
         self, comment_id: int, files: List[UploadFile], user_id: int
     ) -> list[CommentImageResponse]:
         with self._database.session() as session:
@@ -152,12 +152,12 @@ class ImageUseCases:
                 results.append(self._to_comment_image_response(img))
             return results
 
-    def get_comment_images(self, comment_id: int) -> list[CommentImageResponse]:
+    async def get_comment_images(self, comment_id: int) -> list[CommentImageResponse]:
         with self._database.session() as session:
             imgs = self._repo.get_comment_images(session, comment_id)
             return [self._to_comment_image_response(img) for img in imgs]
 
-    def delete_comment_image(self, image_id: int, user_id: int) -> None:
+    async def delete_comment_image(self, image_id: int, user_id: int) -> None:
         with self._database.session() as session:
             img = self._repo.get_comment_image_by_id(session, image_id)
             if img is None:
@@ -169,5 +169,3 @@ class ImageUseCases:
                 )
             self._delete_file(img.file_path)
             self._repo.delete_comment_image(session, img)
-
-

@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 from src.infrastructure.database.database import database, Base
 import asyncio
 import uvicorn
@@ -28,11 +27,10 @@ def startup():
 
     Base.metadata.create_all(bind=database._engine)  # используем _engine
 
-    Path("media").mkdir(exist_ok=True)
-
 
 async def main() -> None:
-    config = uvicorn.Config("main:app", host="0.0.0.0", port=8000, reload=False)
+    config = uvicorn.Config("main:app", host="0.0.0.0",
+                            port=8000, reload=False)
     server = uvicorn.Server(config=config)
     tasks = (asyncio.create_task(server.serve()),)
 

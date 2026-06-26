@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
@@ -15,6 +17,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    Path("media").mkdir(exist_ok=True)
     app.mount("/media", StaticFiles(directory="media"), name="media")
 
     app.include_router(base_router, prefix="/base", tags=["Base APIs"])

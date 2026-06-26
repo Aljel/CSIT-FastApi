@@ -16,7 +16,7 @@ async def toggle_like(
     service: LikeUseCases = Depends(like_use_cases),
 ):
     try:
-        return service.toggle(post_id=data.post_id, user_id=current_user.id)
+        return await service.toggle(post_id=data.post_id, user_id=current_user.id)
     except PostNotFoundByIdException as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()

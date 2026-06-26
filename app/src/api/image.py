@@ -25,7 +25,7 @@ async def upload_post_images(
     service: ImageUseCases = Depends(image_use_cases),
 ):
     try:
-        return service.upload_post_images(post_id, files, current_user.id)
+        return await service.upload_post_images(post_id, files, current_user.id)
     except PostNotFoundByIdException as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
@@ -41,7 +41,7 @@ async def get_post_images(
     post_id: int,
     service: ImageUseCases = Depends(image_use_cases),
 ):
-    return service.get_post_images(post_id)
+    return await service.get_post_images(post_id)
 
 
 @router.delete(
@@ -55,7 +55,7 @@ async def delete_post_image(
     service: ImageUseCases = Depends(image_use_cases),
 ):
     try:
-        service.delete_post_image(image_id, current_user.id)
+        await service.delete_post_image(image_id, current_user.id)
         return None
     except PermissionError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc))
@@ -73,7 +73,7 @@ async def upload_comment_images(
     service: ImageUseCases = Depends(image_use_cases),
 ):
     try:
-        return service.upload_comment_images(comment_id, files, current_user.id)
+        return await service.upload_comment_images(comment_id, files, current_user.id)
     except CommentNotFoundByIdException as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
@@ -89,7 +89,7 @@ async def get_comment_images(
     comment_id: int,
     service: ImageUseCases = Depends(image_use_cases),
 ):
-    return service.get_comment_images(comment_id)
+    return await service.get_comment_images(comment_id)
 
 
 @router.delete(
@@ -103,7 +103,7 @@ async def delete_comment_image(
     service: ImageUseCases = Depends(image_use_cases),
 ):
     try:
-        service.delete_comment_image(image_id, current_user.id)
+        await service.delete_comment_image(image_id, current_user.id)
         return None
     except PermissionError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc))

@@ -14,7 +14,7 @@ class LikeUseCases:
         self._like_repo = LikeRepository()
         self._post_repo = PostRepository()
 
-    def toggle(self, post_id: int, user_id: int) -> LikeToggleResponse:
+    async def toggle(self, post_id: int, user_id: int) -> LikeToggleResponse:
         with self._database.session() as session:
             post = self._post_repo.get_by_id(session, post_id)
             if post is None:

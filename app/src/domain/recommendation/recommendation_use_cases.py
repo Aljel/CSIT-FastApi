@@ -14,7 +14,7 @@ class RecommendationUseCases:
         self._like_repo = LikeRepository()
         self._embedding_repo = EmbeddingRepository()
 
-    def get_similar(
+    async def get_similar(
         self, post_id: int, limit: int = 5, user_id: Optional[int] = None
     ) -> list[PostResponse]:
         with self._database.session() as session:
@@ -54,7 +54,7 @@ class RecommendationUseCases:
                 result.append(resp)
             return result
 
-    def get_personalized(self, user_id: int, limit: int = 10) -> list[PostResponse]:
+    async def get_personalized(self, user_id: int, limit: int = 10) -> list[PostResponse]:
         with self._database.session() as session:
             liked_ids = self._like_repo.get_user_liked_ids(session, user_id)
             liked_ids_set = set(liked_ids)
@@ -63,9 +63,11 @@ class RecommendationUseCases:
                 return self._get_trending(session, limit, liked_ids_set)
 
             embeddings = self._embedding_repo.get_all(session)
-            emb_by_post = {e.post_id: np.array(e.embedding["vec"]) for e in embeddings}
+            emb_by_post = {e.post_id: np.array(
+                e.embedding["vec"]) for e in embeddings}
 
-            liked_vecs = [emb_by_post[pid] for pid in liked_ids if pid in emb_by_post]
+            liked_vecs = [emb_by_post[pid]
+                          for pid in liked_ids if pid in emb_by_post]
             if not liked_vecs:
                 return self._get_trending(session, limit, liked_ids_set)
 
@@ -95,11 +97,11 @@ class RecommendationUseCases:
                 result.append(resp)
             return result
 
-    def get_trending(self, limit: int = 10) -> list[PostResponse]:
+    async def get_trending(self, limit: int = 10) -> list[PostResponse]:
         with self._database.session() as session:
             return self._get_trending(session, limit, set())
 
-    def _get_trending(
+    async def _get_trending(
         self, session, limit: int, liked_ids_set: set
     ) -> list[PostResponse]:
         posts = self._repo.get_by_likes(session, limit=limit)
